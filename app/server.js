@@ -7,8 +7,8 @@ const port = 80
 app.use('/assets', express.static('/srv/opt/Linux-Rocks/assets'))
 app.use('/images', express.static('/srv/opt/Linux-Rocks/images'))
 
-app
-  .get(/^\/(register)?$/, async (req, res) => {
+app.route(/^\/(register)?$/)
+  .get(async (req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/html' })
     res.write(await fs.readFile('/srv/opt/Linux-Rocks/index.html'))
     res.end()

@@ -1,0 +1,28 @@
+{
+  "name": "linux-rocks",
+  "version": "0.1.0",
+  "description": "Proof of concept voting app. Vote for your favorite Linux distribution!",
+  "main": "server.js",
+  "scripts": {
+    "test": "true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DonaldKellett/Linux-Rocks.git"
+  },
+  "keywords": [
+    "Linux",
+    "Docker",
+    "Node.js",
+    "Express"
+  ],
+  "author": "Donald Sebastian Leung",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/DonaldKellett/Linux-Rocks/issues"
+  },
+  "homepage": "https://github.com/DonaldKellett/Linux-Rocks#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

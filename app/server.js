@@ -17,12 +17,20 @@ app.route(/^\/(register)?$/)
     res.write(await fs.readFile('/srv/opt/Linux-Rocks/index.html'))
     res.end()
   })
-  // FIXME: This hangs the connection indefinitely, don't know why
   .post(async (req, res) => {
     if (typeof req.body['email'] !== 'string') {
       res.writeHead(200, { 'Content-Type': 'text/html' })
       let template = await fs.readFile('/srv/opt/Linux-Rocks/register.ejs', { encoding: 'utf8' })
-      res.write(ejs.render(template, { title: 'TODO', description: 'TODO', contentBody: '<p>TODO</p>' }))
+      res.write(ejs.render(template, {
+        title: 'Email Address Not Provided',
+        description: 'It appears that you did not submit your email address for registration',
+        contentBody: `<p>
+  Please enter your email address in the registration page and click &quot;Register&quot; to register for your vote.
+</p>
+<p>
+  <a href="/" class="button">Go Back</a>
+</p>`
+      }))
       res.end()
     } else {
       // TODO

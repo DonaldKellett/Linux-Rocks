@@ -6,6 +6,9 @@ const ejs = require('ejs')
 const validator = require('email-validator')
 const mariadb = require('mariadb')
 const util = require('util')
+const crypto = require('crypto')
+const sha512 = require('js-sha512').sha512
+const nodemailer = require('nodemailer')
 const app = express()
 const port = 80
 
@@ -57,7 +60,8 @@ app.route(/^\/(register)?$/)
         password: 'voters-pw',
         database: 'voters'
       })
-      let rows = await conn.query(`SELECT * FROM voters WHERE email = ${conn.escape(req.body['email'])}`)
+      let email = conn.escape(req.body['email'])
+      let rows = await conn.query(`SELECT * FROM voters WHERE email = ${email}`)
       if (rows.length > 0) {
         res.writeHead(200, { 'Content-Type': 'text/html' })
         res.write(ejs.render(template, {
@@ -75,7 +79,10 @@ app.route(/^\/(register)?$/)
         }))
         res.end()
       } else {
-        res.end('TODO')
+        let otp = crypto.randomBytes(16).toString('hex')
+        let otpHash = sha512(otp)
+        await conn.query(`INSERT INTO voters (email, otp_hash, vote_cast) VALUES (${email}, '${otpHash}', 0)`)
+        // TODO
       }
       await conn.end()
     }

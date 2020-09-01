@@ -28,6 +28,8 @@
     "ejs": "^3.1.5",
     "email-validator": "^2.0.4",
     "express": "^4.17.1",
-    "mariadb": "^2.4.2"
+    "js-sha512": "^0.8.0",
+    "mariadb": "^2.4.2",
+    "nodemailer": "^6.4.11"
   }
 }

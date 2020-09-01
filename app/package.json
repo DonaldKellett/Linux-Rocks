@@ -14,7 +14,8 @@
     "Linux",
     "Docker",
     "Node.js",
-    "Express"
+    "Express",
+    "SQL"
   ],
   "author": "Donald Sebastian Leung",
   "license": "GPL-3.0-or-later",

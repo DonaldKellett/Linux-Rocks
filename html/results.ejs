@@ -6,13 +6,13 @@
 -->
 <html>
 	<head>
-		<title>Linux Rocks | Register</title>
+		<title>Linux Rocks | Results</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
-	<body class="is-preload landing">
+	<body class="is-preload">
 		<div id="page-wrapper">
 
 			<!-- Header -->
@@ -27,38 +27,43 @@
 					</nav>
 				</header>
 
-			<!-- Banner -->
-				<section id="banner">
-					<div class="content">
-						<header>
-							<h2>Linux Rocks</h2>
-							<p>Vote for your favorite Linux distribution!</p>
-						</header>
-						<span class="image"><img src="images/tux.png" alt="Tux, mascot of Linux" /></span>
-					</div>
-					<a href="#register" class="goto-next scrolly">Register</a>
-				</section>
-
-			<!-- Register -->
-				<section id="register" class="wrapper style2 special fade">
+			<!-- Main -->
+				<div id="main" class="wrapper style1">
 					<div class="container">
-						<header>
-							<h2>Register for your vote</h2>
-							<p>All you have to do is enter your email address and click &quot;Register&quot; to start voting</p>
+						<header class="major">
+							<h2>Results</h2>
+							<p>The most popular Linux distribution is: <strong><%= winner %></strong></p>
 						</header>
-						<form method="post" action="/" class="cta">
-							<div class="row gtr-uniform gtr-50">
-								<div class="col-8 col-12-xsmall"><input type="email" name="email" id="email" placeholder="Your Email Address" /></div>
-								<div class="col-4 col-12-xsmall"><input type="submit" value="Register" class="fit primary" /></div>
-							</div>
-						</form>
+
+						<!-- Content -->
+							<section id="content">
+								<p>The popularity we recorded for each Linux distribution is as follows:</p>
+								<ul>
+									<li>Debian: <%= debian %>&percnt;</li>
+									<li>Ubuntu: <%= ubuntu %>&percnt;</li>
+									<li>Linux Mint: <%= mint %>&percnt;</li>
+									<li>Fedora: <%= fedora %>&percnt;</li>
+									<li>RHEL: <%= rhel %>&percnt;</li>
+									<li>CentOS: <%= centos %>&percnt;</li>
+									<li>SLES: <%= sles %>&percnt;</li>
+									<li>openSUSE: <%= opensuse %>&percnt;</li>
+									<li>Arch Linux: <%= arch %>&percnt;</li>
+									<li>Gentoo Linux: <%= gentoo %>&percnt;</li>
+									<li>Slackware Linux: <%= slackware %>&percnt;</li>
+									<li>NixOS: <%= nixos %>&percnt;</li>
+									<li>Alpine Linux: <%= alpine %>&percnt;</li>
+									<li>Other: <%= other %>&percnt;</li>
+									<li>None: <%= none %>&percnt;</li>
+								</ul>
+							</section>
+
 					</div>
-				</section>
+				</div>
 
 			<!-- Footer -->
 				<footer id="footer">
 					<ul class="copyright">
-						<li>&copy; Donald Sebastian Leung. Licensed under <a href="/license" target="_blank">GPLv3</a></li><li>Design: <a href="https://html5up.net" target="_blank">HTML5 UP</a></li>
+						<li>&copy; Donald Sebastian Leung. Licensed under <a href="/license" target="_blank">GPLv3</a>.</li><li>Design: <a href="https://html5up.net" target="_blank">HTML5 UP</a></li>
 					</ul>
 				</footer>
 

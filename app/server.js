@@ -148,6 +148,74 @@ app.route('/vote')
     }
   })
 
+app.get('/results', async (req, res, next) => {
+  try {
+    let results = await fs.readFile('/opt/Linux-Rocks/results.json')
+    results = JSON.parse(results)
+    let winner = 'none'
+    let total = Object.keys(results).reduce((acc, distro) => {
+      if (results[distro] > results[winner])
+        winner = distro
+      return acc + results[distro]
+    }, 0)
+    let debian = total > 0 ? Math.round(100 * results['debian'] / total) : 0
+    let ubuntu = total > 0 ? Math.round(100 * results['ubuntu'] / total) : 0
+    let mint = total > 0 ? Math.round(100 * results['mint'] / total) : 0
+    let fedora = total > 0 ? Math.round(100 * results['fedora'] / total) : 0
+    let rhel = total > 0 ? Math.round(100 * results['rhel'] / total) : 0
+    let centos = total > 0 ? Math.round(100 * results['centos'] / total) : 0
+    let sles = total > 0 ? Math.round(100 * results['sles'] / total) : 0
+    let opensuse = total > 0 ? Math.round(100 * results['opensuse'] / total) : 0
+    let arch = total > 0 ? Math.round(100 * results['arch'] / total) : 0
+    let gentoo = total > 0 ? Math.round(100 * results['gentoo'] / total) : 0
+    let slackware = total > 0 ? Math.round(100 * results['slackware'] / total) : 0
+    let nixos = total > 0 ? Math.round(100 * results['nixos'] / total) : 0
+    let alpine = total > 0 ? Math.round(100 * results['alpine'] / total) : 0
+    let other = total > 0 ? Math.round(100 * results['other'] / total) : 0
+    let none = total > 0 ? Math.round(100 * results['none'] / total) : 0
+    let displayDistro = {
+      'debian': 'Debian',
+      'ubuntu': 'Ubuntu',
+      'mint': 'Linux Mint',
+      'fedora': 'Fedora',
+      'rhel': 'RHEL',
+      'centos': 'CentOS',
+      'sles': 'SLES',
+      'opensuse': 'openSUSE',
+      'arch': 'Arch Linux',
+      'gentoo': 'Gentoo Linux',
+      'slackware': 'Slackware Linux',
+      'nixos': 'NixOS',
+      'alpine': 'Alpine Linux',
+      'other': 'Linux From Scratch / other Linux distributions',
+      'none': 'None'
+    }
+    winner = displayDistro[winner]
+    res.writeHead(200, { 'Content-Type': 'text/html' })
+    res.write(ejs.render(await fs.readFile('/srv/opt/Linux-Rocks/results.ejs', { encoding: 'utf8' }), {
+      winner,
+      debian,
+      ubuntu,
+      mint,
+      fedora,
+      rhel,
+      centos, 
+      sles,
+      opensuse,
+      arch,
+      gentoo,
+      slackware,
+      nixos,
+      alpine,
+      other,
+      none
+    }))
+    res.end()
+  } catch (err) {
+    next(err)
+  }
+})
+
 app.get('/license', async (req, res, next) => {
   try {
     res.writeHead(200, { 'Content-Type': 'text/plain' })

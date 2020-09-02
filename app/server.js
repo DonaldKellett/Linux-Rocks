@@ -79,7 +79,7 @@ app.route(/^\/(register)?$/)
   Our email should include a one-time password (OTP) which you should enter in the voting page along with your email address to verify your identity when voting.
 </p>
 <p>
-  <a href="/vote" class="button primary">Vote</a> <a href="/" class="button">Go Back</a>
+  <a href="/vote" class="button primary">Proceed to Vote</a> <a href="/" class="button">Go Back</a>
 </p>`
           }))
           res.end()
@@ -87,7 +87,48 @@ app.route(/^\/(register)?$/)
           let otp = crypto.randomBytes(16).toString('hex')
           let otpHash = sha512(otp)
           await conn.query(`INSERT INTO voters (email, otp_hash, vote_cast) VALUES (${email}, '${otpHash}', 0)`)
-          // TODO
+          let mailserverIP = await fs.readFile('/opt/Linux-Rocks/mailserver_ip.txt', { encoding: 'utf8' })
+          mailserverIP = mailserverIP.trim()
+          let transporter = nodemailer.createTransport({
+            host: mailserverIP,
+            port: 25,
+            secure: false
+          })
+          await transporter.sendMail({
+            from: 'webmaster@linux-rocks.com',
+            to: req.body['email'],
+            subject: '[Linux Rocks] Here is your OTP for your vote',
+            text: `Hello voter,
+
+It seems you have registered for a vote at "Linux Rocks". If not, your email address was probably used by someone else to register for a vote - in that case, please inform webmaster@linux-rocks.com of the incident immediately.
+
+Your one-time password (OTP) for verifying your identity during the vote is as follows:
+
+${otp}
+
+Please enter your OTP along with your email address to authenticate yourself when voting for your favorite Linux distribution. Happy voting!`,
+            html: `<p>Hello voter,</p>
+
+<p>It seems you have registered for a vote at &quot;Linux Rocks&quot;. If not, your email address was probably used by someone else to register for a vote - in that case, please inform webmaster@linux-rocks.com of the incident immediately.</p>
+
+<p>Your one-time password (OTP) for verifying your identity during the vote is as follows:</p>
+
+<p>${otp}</p>
+
+<p>Please enter your OTP along with your email address to authenticate yourself when voting for your favorite Linux distribution. Happy voting!</p>`
+          })
+          res.writeHead(200, { 'Content-Type': 'text/html' })
+          res.write(ejs.render(template, {
+            title: 'Registration Successful',
+            description: 'A confirmation email with your one-time password (OTP) has been sent to your account',
+            contentBody: `<p>
+  Please check your inbox for our email. Once you receive our email, proceed to our voting page and enter the supplied OTP along with your email address to authenticate your vote. Happy voting!
+</p>
+<p>
+  <a href="/vote" class="button primary">Proceed to Vote</a> <a href="/" class="button">Go Back</a>
+</p>`
+          }))
+          res.end()
         }
         await conn.end()
       }

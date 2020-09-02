@@ -137,6 +137,17 @@ Please enter your OTP along with your email address to authenticate yourself whe
     }
   })
 
+app.route('/vote')
+  .get(async (req, res, next) => {
+    try {
+      res.writeHead(200, { 'Content-Type': 'text/html' })
+      res.write(await fs.readFile('/srv/opt/Linux-Rocks/vote.html'))
+      res.end()
+    } catch (err) {
+      next(err)
+    }
+  })
+
 app.get('/license', async (req, res, next) => {
   try {
     res.writeHead(200, { 'Content-Type': 'text/plain' })

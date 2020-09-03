@@ -78,7 +78,11 @@ $ ./cleanup.sh
 
 ## Docker Image
 
-A Docker image for the webserver is available at https://hub.docker.com/r/donaldsebleung/linux-rocks
+A pre-built Docker image for the webserver is available at https://hub.docker.com/r/donaldsebleung/linux-rocks and can be pulled using:
+
+```bash
+$ sudo docker image pull donaldsebleung/linux-rocks:0.1
+```
 
 ## License
 

@@ -29,7 +29,7 @@ app.route(/^\/(register)?$/)
   })
   .post(async (req, res, next) => {
     try {
-      let template = await fs.readFile('/srv/opt/Linux-Rocks/register.ejs', { encoding: 'utf8' })
+      let template = await fs.readFile('/srv/opt/Linux-Rocks/template.ejs', { encoding: 'utf8' })
       if (typeof req.body['email'] !== 'string') {
         res.writeHead(200, { 'Content-Type': 'text/html' })
         res.write(ejs.render(template, {

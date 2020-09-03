@@ -76,6 +76,10 @@ $ ./cleanup.sh
 - Main webserver container cannot function independently of mailserver/database containers - requires customized shell script for coordinating networking between containers after they have been started
 - UI for results page could be better - maybe use a table with the logos for each Linux distribution instead of just a plain list with percentages
 
+## Docker Image
+
+A Docker image for the webserver is available at https://hub.docker.com/r/donaldsebleung/linux-rocks
+
 ## License
 
 The contents of this repo are licensed under [GPLv3](./LICENSE), with the UI frontend taken from [Landed by HTML5 UP](https://html5up.net/landed) licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0).

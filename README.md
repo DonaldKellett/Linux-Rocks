@@ -1,7 +1,7 @@
 # Linux-Rocks
 
 Proof of concept voting app. Vote for your favorite Linux distribution!
-
+ 
 ## System Requirements
 
 A Linux host. If you are using Windows/macOS, you should be able to run the Docker containers using Docker Desktop, but I would personally recommend installing Alpine Linux (or a Linux distribution of your choice) on a virtual machine using a hypervisor of your choice (e.g. VirtualBox) and running the Docker containers there instead.
@@ -40,6 +40,41 @@ When you're done playing with the app, simply run the cleanup script and you're 
 ```bash
 $ ./cleanup.sh
 ```
+
+## Technologies involved
+
+- Linux
+  - Development environment: [Alpine Linux](https://alpinelinux.org/) 3.12.0
+- Docker
+  - Webserver container: Alpine Linux 3.12.0
+  - MariaDB container: [Ubuntu](https://ubuntu.com/) 20.04.1 LTS
+  - Mailserver container: [Debian](https://www.debian.org/) GNU/Linux 9
+- Node.js - major libraries include:
+  - [Express](https://expressjs.com/)
+  - [EJS](https://ejs.co/)
+  - [MariaDB](https://www.npmjs.com/package/mariadb)
+  - [Nodemailer](https://nodemailer.com/about/)
+- SQL - MariaDB
+
+## Features
+
+- One vote per email address
+- Graceful handling of most user errors (e.g. invalid email address)
+- One-Time Password (OTP) authentication during voting to prevent voting fraud
+- Proper hashing of OTP with SHA512 - vote impersonation by hackers should be infeasible despite data breach
+- Decoupling of individual votes from overall voting statistics - privacy-preserving(?)
+
+## Shortcomings
+
+- Registered email addresses stored as plaintext in database: possible privacy issue in case of data breach?
+- Votes still susceptible to manipulation through multiple email addresses from one person
+- Minimal/non-existent error handling for server-side errors (e.g. failed SQL query)
+- No dedicated 404 page (or 403/500/... page): users greeted with unwelcoming message `Cannot GET /nonexistent/path` instead
+- No salt for OTP hash; but then, OTP is auto-generated and not chosen by user so probably a non-issue anyway
+- Lack of differential privacy in displaying voting results page implies inference attack may still be possible(?)
+- Email-sending setup does not use SMTP smart host: emails are delivered with unacceptable delay and often recognized by major email providers as spam
+- Main webserver container cannot function independently of mailserver/database containers - requires customized shell script for coordinating networking between containers after they have been started
+- UI for results page could be better - maybe use a table with the logos for each Linux distribution instead of just a plain list with percentages
 
 ## License
 

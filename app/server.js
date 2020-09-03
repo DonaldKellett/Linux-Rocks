@@ -147,6 +147,171 @@ app.route('/vote')
       next(err)
     }
   })
+  .post(async (req, res, next) => {
+    let template = await fs.readFile('/srv/opt/Linux-Rocks/template.ejs', { encoding: 'utf8' })
+    let validDistros = [
+      'Debian',
+      'Ubuntu',
+      'Linux Mint',
+      'Fedora',
+      'RHEL',
+      'CentOS',
+      'SLES',
+      'openSUSE',
+      'Arch Linux',
+      'Gentoo Linux',
+      'Slackware Linux',
+      'NixOS',
+      'Alpine Linux',
+      'Other',
+      'None'
+    ]
+    try {
+      if (typeof req.body['email'] !== 'string' || typeof req.body['otp'] !== 'string' || typeof req.body['vote'] !== 'string') {
+        res.writeHead(200, { 'Content-Type': 'text/html' })
+        res.write(ejs.render(template, {
+          title: 'Required Fields Missing',
+          description: 'Your email address, OTP and choice of favorite distro must be provided',
+          contentBody: `<p>
+  Please make sure you submit your email address, OTP and choice of favorite distro in the voting page.
+</p>
+<p>
+  <a href="/vote" class="button primary">Go Back</a>
+  <a href="/" class="button">Return to registration page</a>
+</p>`
+        }))
+        res.end()
+      } else if (!validator.validate(req.body['email'])) {
+        res.writeHead(200, { 'Content-Type': 'text/html' })
+        res.write(ejs.render(template, {
+          title: 'Invalid Email Address Provided',
+          description: 'The email address you provided is invalid',
+          contentBody: `<p>
+  Please make sure you have typed in your email address correctly and try again.
+</p>
+<p>
+  <a href="/vote" class="button primary">Go Back</a>
+  <a href="/" class="button">Return to registration page</a>
+</p>`
+        }))
+        res.end()
+      } else if (!validDistros.includes(req.body['vote'])) {
+        res.writeHead(200, { 'Content-Type': 'text/html' })
+        res.write(ejs.render(template, {
+          title: 'Invalid Option Selected',
+          description: 'It seems you chose something other than the options we provided',
+          contentBody: `<p>
+  Please choose one of the options provided in the voting form as your favorite distro and re-submit your vote.
+  Note that the &quot;Linux From Scratch / other Linux distributions&quot; options is available in case your favorite distro is not listed in one of the options.
+</p>
+<p>
+  <a href="/vote" class="button primary">Go Back</a>
+  <a href="/" class="button">Return to registration page</a>
+</p>`
+        }))
+        res.end()
+      } else {
+        let databaseIP = await fs.readFile('/opt/Linux-Rocks/database_ip.txt', { encoding: 'utf8' })
+        databaseIP = databaseIP.trim()
+        let conn = await mariadb.createConnection({
+          host: databaseIP,
+          user: 'voters',
+          password: 'voters-pw',
+          database: 'voters'
+        })
+        let rows = await conn.query(`SELECT * FROM voters WHERE email = ${conn.escape(req.body['email'])}`)
+        if (rows.length !== 1) {
+          res.writeHead(200, { 'Content-Type': 'text/html' })
+          res.write(ejs.render(template, {
+            title: 'Email Address Not Registered',
+            description: 'The email address you entered was not registered for voting',
+            contentBody: `<p>
+  Please go to the registration page and submit your email address there to register for a vote.
+  If you have already registered for a vote, please make sure you have typed in your email address correctly and try again.
+</p>
+<p>
+  <a href="/" class="button primary">Register for your vote</a>
+  <a href="/vote" class="button">Try Again</a>
+</p>`
+          }))
+          res.end()
+        } else {
+          let row = rows[0]
+          let voteCast = !!row['vote_cast'][0]
+          if (voteCast) {
+            res.writeHead(200, { 'Content-Type': 'text/html' })
+            res.write(ejs.render(template, {
+              title: 'Vote Already Cast',
+              description: 'It appears that you have already voted for your favorite Linux distribution',
+              contentBody: `<p>
+  It appears that you have already voted for your favorite Linux distribution.
+  Note that each email address is only entitled to one vote.
+</p>
+<p>
+  <a href="/" class="button">Return to Main Page</a>
+</p>`
+            }))
+            res.end()
+          } else if (sha512(req.body['otp']) !== row['otp_hash']) {
+            res.writeHead(200, { 'Content-Type': 'text/html' })
+            res.write(ejs.render(template, {
+              title: 'Incorrect OTP supplied',
+              description: 'It appears that you have supplied an incorrect one-time password',
+              contentBody: `<p>
+  Please make sure you have typed in or copied over the OTP we provided you correctly and try again.
+</p>
+<p>
+  <a href="/vote" class="button primary">Try Again</a>
+  <a href="/" class="button">Return to registration page</a>
+</p>`
+            }))
+            res.end()
+          } else {
+            let distroMap = {
+              'Debian': 'debian',
+              'Ubuntu': 'ubuntu',
+              'Linux Mint': 'mint',
+              'Fedora': 'fedora',
+              'RHEL': 'rhel',
+              'CentOS': 'centos',
+              'SLES': 'sles',
+              'openSUSE': 'opensuse',
+              'Arch Linux': 'arch',
+              'Gentoo Linux': 'gentoo',
+              'Slackware Linux': 'slackware',
+              'NixOS': 'nixos',
+              'Alpine Linux': 'alpine',
+              'Other': 'other',
+              'None': 'none'
+            }
+            let distroVotes = await fs.readFile('/opt/Linux-Rocks/results.json', { encoding: 'utf8' })
+            distroVotes = JSON.parse(distroVotes)
+            ++distroVotes[distroMap[req.body['vote']]]
+            await fs.writeFile('/opt/Linux-Rocks/results.json', JSON.stringify(distroVotes))
+            await conn.query(`UPDATE voters SET vote_cast = 1 WHERE email = ${conn.escape(req.body['email'])}`)
+            res.writeHead(200, { 'Content-Type': 'text/html' })
+            res.write(ejs.render(template, {
+              title: 'Vote Recorded',
+              description: 'Thank you for voting for your favorite Linux distro',
+              contentBody: `<p>
+  Thank you for taking the time to vote for your favorite Linux distribution.
+  Your response has been recorded.
+  Don't forget to check out what others have chosen as their favorite Linux distribution!
+</p>
+<p>
+  <a href="/results" class="button primary">View voting results</a>
+  <a href="/" class="button">Return to Main Page</a>
+</p>`
+            }))
+            res.end()
+          }
+        }
+        await conn.end()
+      }
+    } catch (err) {
+      next(err)
+    }
+  })
 
 app.get('/results', async (req, res, next) => {
   try {

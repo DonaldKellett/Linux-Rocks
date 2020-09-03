@@ -78,4 +78,4 @@ $ ./cleanup.sh
 
 ## License
 
-The contents of this repo are licensed under [GPLv3](./LICENSE), with the UI frontend taken from [Landed by HTML5UP](https://html5up.net/landed) licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0).
+The contents of this repo are licensed under [GPLv3](./LICENSE), with the UI frontend taken from [Landed by HTML5 UP](https://html5up.net/landed) licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0).
